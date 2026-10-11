@@ -19,7 +19,7 @@ function App() {
   const toggleTheme = () => setTheme((p) => (p === "dark" ? "light" : "dark"));
 
   // Signed-in users open straight into the app; clicking the brand shows the landing page.
-  const [view, setView] = useState<"landing" | "app">("app");
+const [view, setView] = useState<"landing" | "app">("landing");
 
   return (
     <>
