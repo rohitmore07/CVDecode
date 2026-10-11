@@ -20,10 +20,25 @@ async function ensureCanvasGlobals() {
   g.Path2D ??= class Path2D {};
 }
 
+// pdfjs normally finds its helper file (pdf.worker.mjs) by building a file path at
+// runtime. Vercel only copies files it can see referenced in the code, so that file
+// was missing and every analysis failed ("Setting up fake worker failed").
+// Importing it here by its exact name makes Vercel include it, and pdfjs then uses
+// this already-loaded copy instead of searching for the file.
+async function preloadPdfWorker() {
+  try {
+    // @ts-ignore - this file has no type declarations
+    await import('pdfjs-dist/legacy/build/pdf.worker.mjs');
+  } catch (err) {
+    console.warn('Could not preload the pdf.js worker:', err);
+  }
+}
+
 export async function extractPDFText(dataBuffer: Buffer): Promise<string> {
   let parser: any;
   try {
     await ensureCanvasGlobals();
+    await preloadPdfWorker();
     const { PDFParse } = await import('pdf-parse');
     // Instantiate using v2 structure
     parser = new PDFParse({ data: dataBuffer });
