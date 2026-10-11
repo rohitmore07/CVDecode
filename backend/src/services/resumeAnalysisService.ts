@@ -2,7 +2,7 @@
 import { workerPrisma } from "../config/workerDB";
 import { extractPDFText } from "../utils/pdfParser";
 import { analyzeWithGemini } from "./geminiService";
-import { redisClient } from "../config/redis.caching";
+import { redisClient, ensureRedis } from "../config/redis.caching";
 import { AnalysisResultSchema } from "../utils/validation";
 import { getFile } from "./storage/s3StorageService";
 
@@ -58,7 +58,12 @@ export const analyzeThisResume = async (thisFileID: string, jobVersion: number) 
         }
 
         const cacheKey = `user:${resume.userId}:resume:${thisFileID}`;
-        await redisClient.del(cacheKey);
+        try {
+            await ensureRedis();
+            await redisClient.del(cacheKey);
+        } catch (cacheErr) {
+            console.error("Failed to clear cache after analysis:", cacheErr);
+        }
 
         return analyzedData;
 
@@ -76,6 +81,7 @@ export const analyzeThisResume = async (thisFileID: string, jobVersion: number) 
                 },
             });
             const cacheKey = `user:${updatedResume.userId}:resume:${thisFileID}`;
+            await ensureRedis();
             await redisClient.del(cacheKey);
         } catch (dbErr) {
             console.error("Failed to update status to FAILED in DB:", dbErr);

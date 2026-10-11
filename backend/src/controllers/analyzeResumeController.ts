@@ -1,9 +1,25 @@
 import type { Response } from "express";
-import { ResumeAnalysisQueue } from "../queues/resume.queue";
+import { waitUntil } from "@vercel/functions";
+import { workerPrisma } from "../config/workerDB";
+import { analyzeThisResume } from "../services/resumeAnalysisService";
 import type { AuthenticatedRequest } from "../middleware/authMiddleware";
 import { prisma } from "../config/db";
 import { getResumeForUser } from "../services/getResumeService";
-import { version } from "node:os";
+
+// Runs after the HTTP response is sent. On Vercel, waitUntil keeps the function
+// alive until this finishes. Locally it simply keeps running in the background.
+const runAnalysis = async (fileID: string, version: number) => {
+    try {
+        await workerPrisma.resume.update({
+            where: { id: fileID },
+            data: { status: "PROCESSING" },
+        });
+        // analyzeThisResume marks the resume FAILED itself if anything goes wrong
+        await analyzeThisResume(fileID, version);
+    } catch (error) {
+        console.error(`Analysis failed for ${fileID}:`, error);
+    }
+};
 
 export const analyzeResume = async (req: AuthenticatedRequest, res: Response) => {
     try {
@@ -43,38 +59,17 @@ export const analyzeResume = async (req: AuthenticatedRequest, res: Response) =>
             });
         }
 
-        //Add job to BullMQ Queue
-        const job = await ResumeAnalysisQueue.add(
-            "resume-analysis",
-            {
-                fileID,
-                version: resume.version,
-            },
-            {
-                jobId:  `${fileID}-v${resume.version}`,
-                removeOnComplete:{
-                    age: 3600
-                },
-                removeOnFail:{
-                    age: 86400
-                }
-            }
+        // Already being processed? Don't start a second run. (After 3 minutes we
+        // assume the earlier run died and allow a retry.)
+        const processingFor = Date.now() - new Date(resume.updatedAt).getTime();
+        if (resume.status === "PROCESSING" && processingFor < 3 * 60 * 1000) {
+            return res.status(202).json({ message: "Analysis already in progress" });
+        }
 
-        );
-        console.log(
-            "Added job",
-            job.id,
-            job.name
-        );
-
-        console.log("Job added successfully:", fileID);
-
-        const counts = await ResumeAnalysisQueue.getJobCounts();
-        console.log("QUEUE COUNTS:", counts);
-
-        return res.status(202).json({
-            message: "Analysis started",
-        });
+        // Reply immediately, then analyze in the background.
+        res.status(202).json({ message: "Analysis started" });
+        waitUntil(runAnalysis(fileID, resume.version));
+        return;
     }
     catch (error) {
         console.error("analyze resume controller error ", error);

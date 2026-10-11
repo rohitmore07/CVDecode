@@ -1,10 +1,11 @@
 import type { Response, NextFunction } from "express";
 import type { AuthenticatedRequest } from "./authMiddleware";
-import { redisClient } from "../config/redis.caching";
+import { redisClient, ensureRedis } from "../config/redis.caching";
 
 export const rateLimiter = async (req:AuthenticatedRequest, res: Response, next: NextFunction) => {
     const key = `rate_limit:${req.userId || req.ip}`
     try {
+        await ensureRedis();
         const count: number | null = await redisClient.incr(key);
         if(count == 1){
             await redisClient.expire(key, 60);

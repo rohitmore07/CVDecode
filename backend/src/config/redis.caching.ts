@@ -20,6 +20,21 @@ redisClient.on("error", (err) => {
   console.error("[Cache Redis Error]:", err.message);
 });
 
+// Connects on first use instead of only at server startup. Serverless platforms
+// (Vercel) never run the startup code in server.ts, so every function that
+// touches Redis must call this first. Safe to call many times.
+let connecting: Promise<unknown> | undefined;
+
+export async function ensureRedis() {
+  if (!redisClient.isOpen) {
+    connecting ??= redisClient.connect().finally(() => {
+      connecting = undefined;
+    });
+    await connecting;
+  }
+  return redisClient;
+}
+
 export async function connectRedis() {
   console.log("Redis is connecting... ", );
   

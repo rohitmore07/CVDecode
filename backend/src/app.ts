@@ -15,20 +15,24 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(",")
   : ["http://localhost:5173", "http://localhost:3000"];
 
-app.use(
+app.use((req, res, next) => {
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like server-to-server or tools like curl)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
       }
+      // Same-origin requests (frontend and API on the same Vercel domain)
+      const host = (req.headers["x-forwarded-host"] as string) || req.headers.host;
+      try {
+        if (host && new URL(origin).host === host) return callback(null, true);
+      } catch {}
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-  })
-);
+  })(req, res, next);
+});
 app.use(
   express.json({
     verify: (req: any, res, buf) => {

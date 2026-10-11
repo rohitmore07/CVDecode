@@ -1,7 +1,7 @@
 import { prisma, Prisma } from "../config/db";
 import { CreateResumeSchema } from "../utils/validation";
 import { deleteFile } from "./storage/s3StorageService";
-import { redisClient } from "../config/redis.caching";
+import { redisClient, ensureRedis } from "../config/redis.caching";
 
 export const createFileDB = async (
   s3Key: string, 
@@ -27,6 +27,7 @@ export const createFileDB = async (
 
     const cacheKey = `user:${userId}:resume:${existingResume.id}`;
     try {
+      await ensureRedis();
       await redisClient.del(cacheKey);
     } catch (err) {
       console.error("Failed to invalidate Redis cache:", err);
@@ -97,6 +98,7 @@ export const deleteResumeService = async (resumeID: string, userId: string) => {
 
   const cacheKey = `user:${userId}:resume:${resumeID}`;
   try {
+    await ensureRedis();
     await redisClient.del(cacheKey);
   } catch (err) {
     console.error("Failed to invalidate Redis cache:", err);
