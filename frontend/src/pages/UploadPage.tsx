@@ -145,7 +145,7 @@ export const UploadPage: React.FC<UploadPageProps> = ({ theme, toggleTheme, onGo
   return (
     <div className="flex flex-col min-h-screen">
       <PageShell
-        title="Resumark"
+        title="CVDecode"
         subtitle="Structured Auditing"
         theme={theme}
         toggleTheme={toggleTheme}

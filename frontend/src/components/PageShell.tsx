@@ -78,7 +78,7 @@ export function PageShell({
       <footer className="border-t border-main-theme">
         <div className="mx-auto max-w-5xl px-5 py-5 sm:px-6">
           <p className="text-[13px] text-muted-theme text-center">
-            © {new Date().getFullYear()} Resumark. All rights reserved.
+            © {new Date().getFullYear()} CVDecode. All rights reserved.
           </p>
         </div>
       </footer>

@@ -32,7 +32,7 @@ export function LandingPage({ theme, toggleTheme, isSignedIn, onGetStarted }: La
 
   return (
     <PageShell
-      title="Resumark"
+      title="CVDecode"
       subtitle="Structured Auditing"
       theme={theme}
       toggleTheme={toggleTheme}
@@ -56,7 +56,7 @@ export function LandingPage({ theme, toggleTheme, isSignedIn, onGetStarted }: La
               <div className="inline-flex items-center gap-2 rounded border border-main-theme bg-panel-theme px-3 py-1">
                 <Layers className="h-3.5 w-3.5 text-accent-theme" />
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-secondary-theme font-mono">
-                  Resumark 1.0 — Professional Document Compliance
+                  CVDecode 1.0 — Professional Document Compliance
                 </span>
               </div>
 
@@ -181,7 +181,7 @@ export function LandingPage({ theme, toggleTheme, isSignedIn, onGetStarted }: La
               Audit Scans
             </span>
             <h2 className="mt-1 text-2xl font-bold tracking-tight text-primary-theme">
-              Structured validations performed by Resumark
+              Structured validations performed by CVDecode
             </h2>
           </div>
 
@@ -437,7 +437,7 @@ const STEPS: { title: string; desc: string }[] = [
   },
   {
     title: "Audit Processing",
-    desc: "Resumark audits your layout format, section structure, and keyword content.",
+    desc: "CVDecode audits your layout format, section structure, and keyword content.",
   },
   {
     title: "Scorecard Delivery",
