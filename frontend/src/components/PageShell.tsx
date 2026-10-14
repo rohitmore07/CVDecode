@@ -22,15 +22,19 @@ export function PageShell({
 }: PageShellProps) {
   const brand = (
     <>
-      <div className="font-mono text-sm font-bold tracking-tight text-accent-theme bg-panel-theme border border-main-theme px-2.5 py-1 rounded-none">
-        [RM]
-      </div>
-      <div className="flex items-baseline gap-2">
+      <img
+        src="/favicon.svg"
+        alt=""
+        width={28}
+        height={28}
+        className="h-7 w-7 shrink-0 rounded-none"
+      />
+      <span className="flex items-baseline gap-2">
         <span className="text-[15px] font-semibold tracking-tight text-primary-theme">
           {title}
         </span>
         <span className="hidden text-xs text-muted-theme sm:block font-mono">{subtitle}</span>
-      </div>
+      </span>
     </>
   );
 

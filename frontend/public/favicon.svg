@@ -1,16 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <style>
-    .logo {
-      font-family: 'JetBrains Mono', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-weight: 800;
-      font-size: 15px;
-      fill: #b91c1c;
-    }
-    @media (prefers-color-scheme: dark) {
-      .logo {
-        fill: #ef4444;
-      }
-    }
-  </style>
-  <text x="16" y="16.5" text-anchor="middle" dominant-baseline="central" class="logo">[RM]</text>
+<svg width="195" height="223" viewBox="0 0 195 223" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M48.75 20.2727H19.5V50.6818H0V0H48.75V20.2727ZM195 50.6818V0H146.25V20.2727H175.5V50.6818H195ZM48.75 202.727H19.5V172.318H0V223H48.75V202.727ZM175.5 172.318V202.727H146.25V223H195V172.318H175.5ZM165.75 30.4091V192.591H29.25V30.4091H165.75ZM126.75 70.9545H68.25V91.2273H126.75V70.9545ZM126.75 101.364H68.25V121.636H126.75V101.364ZM126.75 131.773H68.25V152.045H126.75V131.773Z" fill="#5D98FD"/>
 </svg>
